@@ -1,5 +1,10 @@
 #!/bin/bash
 
+if [ ! -x './syft' ]; then
+    echo "Command ./syft must exist and be executable"
+    exit 1
+fi
+
 # construct full set of input images
 IMAGES=`cat input_images/* | sort | uniq`
 
@@ -27,3 +32,4 @@ do
     echo
 done
 date > ./results/last_updated
+exit 0
