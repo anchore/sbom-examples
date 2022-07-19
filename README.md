@@ -9,13 +9,13 @@ files in this repo that are stored using Git Large File Storage.
 
 This project contains a couple of directories
 
-## [input_images](Input Images)
+## [Input Images](input_images)
 The input image file lives in this directory. You can add new things to scan with a pull request.
 
-## [results](Results)
+## [Results](results)
 This is where the SBOM output is stored. Feel free to take a look around. We only output JSON right now. If you think XML would be useful, Syft can certainly do that.
 
-## [scripts](Scripts)
+## [Scripts](scripts)
 
 There are a couple of scripts here that help show off what you an do with an SBOM.
 
