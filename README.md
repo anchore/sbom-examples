@@ -70,10 +70,77 @@ are.
 
 ## How can I make an SBOM?
 
-The single easiest way to create an SBOM is to use a tool called Syft
+The single easiest way to create an SBOM is to use a tool called
+[Syft](https://github.com/anchore/syft/)
 
-There are many other tools, for the purpose of simplicity we are only
-talking about Syft in this space.
+There are a variety of ways to install Syft, please see these
+[instructions](https://github.com/anchore/syft/#installation) for the best
+way on your system.
+
+Once Syft is installed, it's very easy to run.
+
+We are going to base these exapmles on Syft itself. The first thing we will
+do is pull the Syft GitHub repository
+
+`git clone https://github.com/anchore/syft.git`
+
+### Scanning a directory
+
+You can scan a directory with Syft. We should scan the repository we just
+checked out.
+
+First run
+```
+➜  ~ syft  src/syft
+```
+
+This command will give us a lot of output. This is our source SBOM. There
+are a lot of packages that won't end up in our final build, so this is a
+great example.
+
+Now if we want to do something more useful, we should run
+
+```
+➜  ~ syft  -o json --file=syft-source-sbom.json src/syft
+ ✔ Indexed src/syft
+ ✔ Cataloged packages      [841 packages]
+```
+
+The 841 packages will be important later, so keep it in mind. These
+packages are all the things included in Syft that we need to develop it.
+This isn't an uncommonly large number, this is pretty normal.
+
+The `-o json` tells syft to use the syft json format. Because we will use
+this file later with Grype, we are going to stick with the Syft format. But
+Syft supports a variety of formats including SPDX and CycloneDX.
+
+The `--file=syft-sbom.json` is the output file of the command.
+
+Now let's generate a build SBOM. How to build Syft is a bit more complex
+than we want to cover here, but here's what happens when when we scan the
+build.
+
+```
+➜  ~ syft  -o json --file=syft-build-sbom.json src/syft
+ ✔ Indexed src/syft
+ ✔ Cataloged packages      [4536 packages]
+```
+
+Notice after the build. we have 4536 packages that get scanned now. These
+are all the development and build artifacts needed to create the Syft
+binary.
+
+And lastly, let's scan the Syft container, which is what gets deployed.
+
+```
+➜  ~ ./syft -o json --file=syft-deploy-sbom.json docker.io/anchore/syft:latest 
+ ✔ Parsed image
+ ✔ Cataloged packages      [227 packages]
+```
+
+The container only has 227 packages in it, this seems far more reasonable.
+But it's important to keep in mind that all those other packages are part
+of our supply chain. We cannot ignore those packages.
 
 ## What can I do with an SBOM?
 
