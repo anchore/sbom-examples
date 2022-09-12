@@ -32,7 +32,9 @@ our development down into: source, build, and runtime. Each of these SBOMs
 will be different and contain different content. Each stage is important
 and should be captured and analyzed.
 
-These stages should be thought of only as examples. There is no definitive list of SBOM lifecycle stages yet. As SBOM usage evolves we will see new and different guidance on this topic. Check back in regularly as we will continue to update this site as the industry helps define how to create and use SBOMs.
+These stages should be thought of only as examples. There is no definitive list of SBOM lifecycle stages yet. The best explanation of lifecycle is probably from the Supply chain Levels for Software Artifacts, or SLSA project. You can review their lifecycle [here](https://slsa.dev/spec/v0.1/index#slsa-101).
+
+As SBOM usage evolves we will see new and different guidance on this topic. Check back in regularly as we will continue to update this site as the industry helps define how to create and use SBOMs.
 
 #### Source
 The source SBOM represents your application during development. This SBOM
