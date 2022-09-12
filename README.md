@@ -164,7 +164,7 @@ If we look at two different Syft versions
  ```
 
 ```
-bress@anchore ➜  ~ syft -o json --file=syft-40-sbom.json anchore/syft:v0.40.0
+➜  ~ syft -o json --file=syft-40-sbom.json anchore/syft:v0.40.0
  ✔ Loaded image
  ✔ Parsed image
  ✔ Cataloged packages      [241 packages]
@@ -191,7 +191,7 @@ As you can imagine, with an SBOM, you can ask the scanning to skip the discovery
 For example we can scan the Syft version 56 SBOM we just generated.
 
 ```
-bress@anchore ➜  ~ grype sbom:syft-56-sbom.json
+➜  ~ grype sbom:syft-56-sbom.json
  ✔ Vulnerability DB        [no update available]
 New version of grype is available: 0.50.0 (currently running: 0.48.0)
  ✔ Scanned image           [2 vulnerabilities]
