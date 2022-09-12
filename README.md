@@ -104,8 +104,8 @@ great example.
 Now if we want to do something more useful, we should run
 
 ```
-➜  ~ syft  -o json --file=syft-source-sbom.json src/syft
- ✔ Indexed src/syft
+➜  ~ syft  -o json --file=syft-source-sbom.json dir:./syft
+ ✔ Indexed ./syft
  ✔ Cataloged packages      [841 packages]
 ```
 
@@ -124,8 +124,8 @@ than we want to cover here, but here's what happens when when we scan the
 Syft directory after the build runs.
 
 ```
-➜  ~ syft  -o json --file=syft-build-sbom.json src/syft
- ✔ Indexed src/syft
+➜  ~ syft  -o json --file=syft-build-sbom.json dir:./syft
+ ✔ Indexed ./syft
  ✔ Cataloged packages      [4536 packages]
 ```
 
