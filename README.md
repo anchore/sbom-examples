@@ -174,6 +174,39 @@ We can see a difference in the number of packages. We can also inspect the two S
 
 ### Look for a certain package as deployed
 
+At the end of 2021, the Log4Shell incident altered the course of software supply chain security for many of us. A huge number of organizations were tasked with uncovering if they had Log4j anywhere. For most this means manually searching for Log4j which was extremely disruptive and time consuming.
+
+This is a great use case for keeping track of SBOMs for your software.
+
+If you were lucky enough to have been generating and storing SBOMs before Log4Shell, finding Log4j was really just doing a search across all your SBOMs. That then told you were Log4j is, and also where it was in the past.
+
+There will be events again in the future where we will need to know if we have a certain piece of software running. If you have SBOMs, this is a very easy question to answer.
+
 ### Look for vulnerabilities, now and in the future
 
+SBOMs can also be used to scan an application for vulnerabilities. Historically scanning an application for vulnerable components meant pointing the scanner at the software, letting it run, then interpreting the results. These scans could take seconds or minutes and were often disruptive to running systems.
+
+As you can imagine, with an SBOM, you can ask the scanning to skip the discovery phase and just report back on vulnerable packages. There is a companion tool to Syft called [Grype](https://github.com/anchore/grype) that can do just this.
+
+For example we can scan the Syft version 56 SBOM we just generated.
+
+```
+bress@anchore ➜  ~ grype sbom:syft-56-sbom.json
+ ✔ Vulnerability DB        [no update available]
+New version of grype is available: 0.50.0 (currently running: 0.48.0)
+ ✔ Scanned image           [2 vulnerabilities]
+
+[0000]  WARN some package(s) are missing CPEs. This may result in missing vulnerabilities. You may autogenerate these using: --add-cpes-if-none
+NAME                        INSTALLED  FIXED-IN  TYPE       VULNERABILITY   SEVERITY
+google.golang.org/protobuf  v1.28.1              go-module  CVE-2015-5237   High
+google.golang.org/protobuf  v1.28.1              go-module  CVE-2021-22570  Medium
+```
+Rather than having to first scan the Syft container, Grype can use the SBOM to very quickly return results.
+
+We also gain the historic benefit from SBOMs. We can not only scan the latest version of software we have, we could scan history SBOMs to ask questions like "was this container vulnerable to Log4Shell". The added benefit of this is we often don't keep old container images around for long periods of time as they are large. SBOMs tend to be fairly small, storing them for a very long time makes sense.
+
 ### Understand your supply chain
+
+Lastly, and possibly most importantly. SBOMs help us understand our overall supply chain. We can understand the software we are building. The open source components we are pulling in. The versions of libraries in use. The rate at which we are updating the libraries.
+
+There are some tools to do these things today (the SBOM format websites track these tools). Some of the tasks need to be done by hand. We are the beginning of creating the SBOM ecosystem, there are far more ideas than tools at this point. But as all new industries work, part of this challenge is to understand the problems, then create solutions.
