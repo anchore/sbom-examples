@@ -1,7 +1,7 @@
 # SBOM.me
 
 Welcome to SBOM.me. This is a place to not only learn about SBOMs, but also
-start creating and using them yourself in just a couple of minutes.
+start creating and using them yourself in just a couple of minutes. It's usually easier to learn by doing than it is just to read, there are plenty of examples here for everyone.
 
 This is all hosted in GitHub, feel free to checkout the
 [ABOUT.md](ABOUT.md) for more details on the repository itself.
@@ -19,25 +19,28 @@ site](https://www.cisa.gov/sbom)
 
 ### SBOM formats
 
-There are currently two popular SBOM formats in use. SPDX and CycloneDX.
+There are currently two popular SBOM formats in use. [SPDX](https://spdx.dev/) and [CycloneDX](https://cyclonedx.org/). Feel free to visit the websites for each format to better understand them.
+
+Rather than focus on one SBOM format, we encourage generating both SPDX and CycloneDX documents. By generating both formats, it allows SBOM consumers to use whichever format their tools support.
 
 ### Lifecycle of an SBOM
 
 While an SBOM is a static document, pinpointing what is in software when a
-scan was run, there are differet stages of development you can capture and
+scan was run, there are different stages of development you can capture and
 compare an SBOM. For example we could take a very simple view of breaking
 our development down into: source, build, and runtime. Each of these SBOMs
 will be different and contain different content. Each stage is important
-and should be captured.
+and should be captured and analyzed.
+
+These stages should be thought of only as examples. There is no definitive list of SBOM lifecycle stages yet. As SBOM usage evolves we will see new and different guidance on this topic. Check back in regularly as we will continue to update this site as the industry helps define how to create and use SBOMs.
 
 #### Source
 The source SBOM represents your application during development. This SBOM
 could contain development dependencies, development versions of open source
-packages. It might contain files that only exist in certain branches of
-your source management system.
+packages, and software needed to build an application. It might contain files that only exist in certain branches of your source management system.
 
 A source SBOM gives you the ability to understand if any of your
-dependencies are outdated (includeing development dependencies, these often
+dependencies are outdated (including development dependencies, these often
 get ignored). You can also use source SBOMs as a sort of time machine to
 look back to when a certain file or dependency was first added to the
 project.
@@ -49,7 +52,7 @@ SBOM during the build stage you can look back into what exactly was built
 and shipped for any product or component.
 
 This SBOM will differ from the source SBOM because during a build things
-can happen that are outisde of a development environment. Maybe a container
+can happen that are outside of a development environment. Maybe a container
 is created. A binary could be copied into the build. Builds can be signed
 during this stage, the signatures and checksums can also be captured by the
 SBOM scanner.
@@ -65,7 +68,7 @@ contents that we were tracking in the build SBOM.
 The runtime SBOM can help us understand when our application contains
 security vulnerabilities. It can give us insight into what we've changed in
 our running deployment vs what we received from our vendor. It can also
-give us insight into understnading how old our application and depdnecies
+give us insight into understanding how old our application and dependencies
 are.
 
 ## How can I make an SBOM?
@@ -79,19 +82,19 @@ way on your system.
 
 Once Syft is installed, it's very easy to run.
 
-We are going to base these exapmles on Syft itself. The first thing we will
-do is pull the Syft GitHub repository
+We are going to base these examples on Syft itself. The first thing we will
+do is pull the Syft GitHub repository then scan the Syft source code.
 
 `git clone https://github.com/anchore/syft.git`
 
 ### Scanning a directory
 
-You can scan a directory with Syft. We should scan the repository we just
+You can scan many different types of artifacts with Syft. In this instance we will scan a directory with Syft. We should scan the repository we just
 checked out.
 
 First run
 ```
-➜  ~ syft  src/syft
+➜  ~ syft  dir:src/syft
 ```
 
 This command will give us a lot of output. This is our source SBOM. There
@@ -118,7 +121,7 @@ The `--file=syft-sbom.json` is the output file of the command.
 
 Now let's generate a build SBOM. How to build Syft is a bit more complex
 than we want to cover here, but here's what happens when when we scan the
-build.
+Syft directory after the build runs.
 
 ```
 ➜  ~ syft  -o json --file=syft-build-sbom.json src/syft
@@ -128,9 +131,9 @@ build.
 
 Notice after the build. we have 4536 packages that get scanned now. These
 are all the development and build artifacts needed to create the Syft
-binary.
+binary. This shows why there is a difference between source and build SBOMs, and why it's important.
 
-And lastly, let's scan the Syft container, which is what gets deployed.
+And lastly, let's scan the Syft container, which is what will be deployed. This is the runtime SBOM.
 
 ```
 ➜  ~ ./syft -o json --file=syft-deploy-sbom.json docker.io/anchore/syft:latest 
@@ -139,15 +142,38 @@ And lastly, let's scan the Syft container, which is what gets deployed.
 ```
 
 The container only has 227 packages in it, this seems far more reasonable.
-But it's important to keep in mind that all those other packages are part
-of our supply chain. We cannot ignore those packages.
+It's important to keep in mind that these 227 packages, as well as all those other packages from source and build are part of our supply chain. All the packages matter.
 
 ## What can I do with an SBOM?
 
-Detect drift between the types above
+Once we have an SBOM, the question of what to do with it arises. There are many vendors and projects dedicated to managing SBOMs. We aren't going to cover SBOM management here, but we will cover some of the use cases that exist today. As SBOM understanding and technology improve, we will see many more use cases.
 
-Look for a certain package as deployed
+### Detect drift between the types above
 
-Look for vulnerabilities, now and in the future
+One use is to compare what packages are added and removed between the SBOM types, as well as how those packages change over time.
 
-Understand your supply chain
+In our above example, we add and remove a large number of packages between the source, build, and deploy stages. This is a form of SBOM drift that detects changes in a single version. We can also track SBOM drift across versions.
+
+If we look at two different Syft versions
+
+```
+➜  ~ syft -o json --file=syft-56-sbom.json anchore/syft:v0.56.0
+ ✔ Loaded image
+ ✔ Parsed image
+ ✔ Cataloged packages      [216 packages]
+ ```
+
+```
+bress@anchore ➜  ~ syft -o json --file=syft-40-sbom.json anchore/syft:v0.40.0
+ ✔ Loaded image
+ ✔ Parsed image
+ ✔ Cataloged packages      [241 packages]
+ ```
+
+We can see a difference in the number of packages. We can also inspect the two SBOMs to better understand what is different. We will see some packages added, some removed, and new versions.
+
+### Look for a certain package as deployed
+
+### Look for vulnerabilities, now and in the future
+
+### Understand your supply chain
