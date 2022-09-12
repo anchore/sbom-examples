@@ -94,7 +94,7 @@ checked out.
 
 First run
 ```
-➜  ~ syft  dir:src/syft
+➜  ~ syft  dir:./syft
 ```
 
 This command will give us a lot of output. This is our source SBOM. There
