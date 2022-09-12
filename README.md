@@ -202,7 +202,9 @@ google.golang.org/protobuf  v1.28.1              go-module  CVE-2021-22570  Medi
 ```
 Rather than having to first scan the Syft container, Grype can use the SBOM to very quickly return results.
 
-We also gain the historic benefit from SBOMs. We can not only scan the latest version of software we have, we could scan history SBOMs to ask questions like "was this container vulnerable to Log4Shell". The added benefit of this is we often don't keep old container images around for long periods of time as they are large. SBOMs tend to be fairly small, storing them for a very long time makes sense.
+We also gain the historic benefit from SBOMs. We can not only scan the latest version of software we have, we could scan history SBOMs to ask questions like "was this container vulnerable to Log4Shell". When there is a significant security event, it can be very valuable to look back in time at things that were once deployed. If you know a vulnerability was being exploited in the past, you can make informed decisions if you know what was vulnerable at that point in time.
+
+The added benefit of this is we often don't keep old container images around for long periods of time as they are large. SBOMs tend to be fairly small, storing them for a very long time makes sense.
 
 ### Understand your supply chain
 
