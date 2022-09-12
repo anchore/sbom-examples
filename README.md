@@ -194,11 +194,8 @@ For example we can scan the Syft version 56 SBOM we just generated.
 
 ```
 ➜  ~ grype sbom:syft-56-sbom.json
- ✔ Vulnerability DB        [no update available]
-New version of grype is available: 0.50.0 (currently running: 0.48.0)
  ✔ Scanned image           [2 vulnerabilities]
 
-[0000]  WARN some package(s) are missing CPEs. This may result in missing vulnerabilities. You may autogenerate these using: --add-cpes-if-none
 NAME                        INSTALLED  FIXED-IN  TYPE       VULNERABILITY   SEVERITY
 google.golang.org/protobuf  v1.28.1              go-module  CVE-2015-5237   High
 google.golang.org/protobuf  v1.28.1              go-module  CVE-2021-22570  Medium
