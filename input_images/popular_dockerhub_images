@@ -169,3 +169,6 @@ docker.io/anchore/syft:latest
 docker.io/anchore/grype:latest
 docker.io/library/centos:latest
 docker.io/library/satosa:latest
+docker.io/library/unit:latest
+docker.io/library/spark:latest
+docker.io/library/liquibase:latest
