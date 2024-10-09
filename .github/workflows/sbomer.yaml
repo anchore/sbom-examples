@@ -26,7 +26,7 @@ jobs:
 
       - name: Installl syft
         run: |
-          curl -sSfL https://raw.githubusercontent.com/anchore/syft/main/install.sh | sh -s -- -b ./ v0.48.0
+          curl -sSfL https://raw.githubusercontent.com/anchore/syft/main/install.sh | sh -s -- -b ./ v1.14.0
 
       - name: Generate input images
         run: |
