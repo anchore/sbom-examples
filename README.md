@@ -1,153 +1,97 @@
-# SBOM.me
+# SBOM Examples
+Welcome to SBOM-Examples. This site is a project showing off Software Bill of Material (SBOM). We focus on how to create an SBOM and more importantly, what you can do with an SBOM once you have it!
 
-Welcome to SBOM.me. This is a place to not only learn about SBOMs, but also
-start creating and using them yourself in just a couple of minutes.
+SBOM Examples will generate SBOMs from a number of popular container images every night. The list can be found [input_images/popular_dockerhub_images](here). The [https://github.com/syft](Syft) SBOM scanner is used to generate the output SBOMs. Syft is REALLY easy to run. It can output SPDX, CycloneDX, and Syft JSON SBOM files.
 
-This is all hosted in GitHub, feel free to checkout the
-[ABOUT.md](ABOUT.md) for more details on the repository itself.
+If you plan to work with this Git repository you will need to install the
+git-lfs module then run `git-lfs install`. There are a lot of large SBOM
+files in this repo that are stored using Git Large File Storage.
 
-## What is an SBOM?
+This project contains a couple of directories
 
-A "software bill of materials", or SBOM, is a document that describes the
-contents of a software application. Everything from the existing files in
-the application to the open source components added during the application
-build. The content of the SBOM is meant to represent a snapshot of the
-contents at a given time and stage in the lifecycle of software.
+## [input_images](Input Images)
+The input image file lives in this directory. You can add new things to scan with a pull request.
 
-You can find more details on SBOM at the [CISA SBOM
-site](https://www.cisa.gov/sbom)
+## [results](Results)
+This is where the SBOM output is stored. Feel free to take a look around. We only output JSON right now. If you think XML would be useful, Syft can certainly do that.
 
-### SBOM formats
+## [scripts](Scripts)
 
-There are currently two popular SBOM formats in use. SPDX and CycloneDX.
-
-### Lifecycle of an SBOM
-
-While an SBOM is a static document, pinpointing what is in software when a
-scan was run, there are differet stages of development you can capture and
-compare an SBOM. For example we could take a very simple view of breaking
-our development down into: source, build, and runtime. Each of these SBOMs
-will be different and contain different content. Each stage is important
-and should be captured.
-
-#### Source
-The source SBOM represents your application during development. This SBOM
-could contain development dependencies, development versions of open source
-packages. It might contain files that only exist in certain branches of
-your source management system.
-
-A source SBOM gives you the ability to understand if any of your
-dependencies are outdated (includeing development dependencies, these often
-get ignored). You can also use source SBOMs as a sort of time machine to
-look back to when a certain file or dependency was first added to the
-project.
-
-#### Build
-The build SBOM is the SBOM that you generate during a build. It could be a
-partial build, or a test build, or even the final build. By generating an
-SBOM during the build stage you can look back into what exactly was built
-and shipped for any product or component.
-
-This SBOM will differ from the source SBOM because during a build things
-can happen that are outisde of a development environment. Maybe a container
-is created. A binary could be copied into the build. Builds can be signed
-during this stage, the signatures and checksums can also be captured by the
-SBOM scanner.
-
-#### Runtime
-
-A runtime SBOM is the thing that will be deployed into an environment. It
-will contain final builds, supporting libraries (like an operating system
-or container image). The configuration files have been updated, defaults
-have probably changed. It's even possible someone modified some of the
-contents that we were tracking in the build SBOM.
-
-The runtime SBOM can help us understand when our application contains
-security vulnerabilities. It can give us insight into what we've changed in
-our running deployment vs what we received from our vendor. It can also
-give us insight into understnading how old our application and depdnecies
-are.
-
-## How can I make an SBOM?
-
-The single easiest way to create an SBOM is to use a tool called
-[Syft](https://github.com/anchore/syft/)
-
-There are a variety of ways to install Syft, please see these
-[instructions](https://github.com/anchore/syft/#installation) for the best
-way on your system.
-
-Once Syft is installed, it's very easy to run.
-
-We are going to base these exapmles on Syft itself. The first thing we will
-do is pull the Syft GitHub repository
-
-`git clone https://github.com/anchore/syft.git`
-
-### Scanning a directory
-
-You can scan a directory with Syft. We should scan the repository we just
-checked out.
-
-First run
-```
-➜  ~ syft  src/syft
-```
-
-This command will give us a lot of output. This is our source SBOM. There
-are a lot of packages that won't end up in our final build, so this is a
-great example.
-
-Now if we want to do something more useful, we should run
+There are a couple of scripts here that help show off what you an do with an SBOM.
 
 ```
-➜  ~ syft  -o json --file=syft-source-sbom.json src/syft
- ✔ Indexed src/syft
- ✔ Cataloged packages      [841 packages]
+generate_dockerhub_images.py
+make_sboms.sh
+make_vulnscans.sh
+package_type_summarize.py
+package_name_summarize.py
+search_for_package.py
 ```
 
-The 841 packages will be important later, so keep it in mind. These
-packages are all the things included in Syft that we need to develop it.
-This isn't an uncommonly large number, this is pretty normal.
+We'll discuss what these all do later in the document
 
-The `-o json` tells syft to use the syft json format. Because we will use
-this file later with Grype, we are going to stick with the Syft format. But
-Syft supports a variety of formats including SPDX and CycloneDX.
+# Creating an SBOM
+Let's talk about what an SBOM is and how to create it.
 
-The `--file=syft-sbom.json` is the output file of the command.
+You can find out more about SBOMs [https://www.cisa.gov/sbom](here).
+There's a lot of great details about the SBOM form from that CISA site.
 
-Now let's generate a build SBOM. How to build Syft is a bit more complex
-than we want to cover here, but here's what happens when when we scan the
-build.
+There are many tools that can generate an SBOM. For the purposes of
+simplicity we are going to focus on the Syft SBOM scanner. You can install
+Syft a number of ways, take a look at the Syft GitHub
+[https://github.com/anchore/syft/#installation](repo).
 
-```
-➜  ~ syft  -o json --file=syft-build-sbom.json src/syft
- ✔ Indexed src/syft
- ✔ Cataloged packages      [4536 packages]
-```
-
-Notice after the build. we have 4536 packages that get scanned now. These
-are all the development and build artifacts needed to create the Syft
-binary.
-
-And lastly, let's scan the Syft container, which is what gets deployed.
+Once we have syft, it's as easy as running
 
 ```
-➜  ~ ./syft -o json --file=syft-deploy-sbom.json docker.io/anchore/syft:latest 
- ✔ Parsed image
- ✔ Cataloged packages      [227 packages]
+syft debian:latest
 ```
 
-The container only has 227 packages in it, this seems far more reasonable.
-But it's important to keep in mind that all those other packages are part
-of our supply chain. We cannot ignore those packages.
+to scan the latest Debian container image for example. If we want to output
+a SPDX JSON file, we can run
 
-## What can I do with an SBOM?
+```
+syft -o spdx-json debian:latest
+```
 
-Detect drift between the types above
+There are a LOT of options for running syft. You can scan container images,
+directories, files, registries. And it's all extremely easy.
 
-Look for a certain package as deployed
+# What can we do with an SBOM?
+There are a few things we can do wtih an SBOM today. It's very new technology, so as we see more use of SBOMs, we will see new and novel ideas. If you can think of something we haven't, please let us know with a pull request!
 
-Look for vulnerabilities, now and in the future
+## Vulnerability scanning
+You can use an SBOM to scan for vulnerabilities. And it's REALLY fast.
 
-Understand your supply chain
+For example we can use [https://github.com/anchore/grype/](Grype) to scan
+an SBOM document instead of scanning the actual content. For example
+
+```
+grype sbom:./debian-latest.json
+```
+
+## Searching for packages
+Log4j is one of the finest examples of wanting to look for a certain pakage in your data.
+
+XXX: Add a note about the scripts that can do this
+
+One use when searching for packages is having the ability to gaze into the
+past to ask questions about certain packages that you have shipped. For
+example if you need to know if you shipped a certain logging package in any
+of your software, you can quickly figure this out by just searching the
+stored SBOMs.
+
+You can also use SBOMs to understand your currently running packages. If
+you need to know if a specific version of a popular logging package is
+being used in production, you can save a lot of time with a list of
+currently running SBOMs.
+
+## Gaining insight into your software
+
+SBOMs are a form of observability for our software. We quickly answer
+questions like what technologies and languages are in use. Which Linux
+distributions are deployed. How are we using certain dependencies. How many
+dependencies do we have. What open source licenses are in use. And many
+other questions.
+
+The foundation of the software supply chain is an SBOM document.
